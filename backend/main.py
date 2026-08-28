@@ -24,7 +24,7 @@ load_dotenv()
 
 app = FastAPI(title="Criminal Network Analysis API", version="1.0.0")
 
-CORS_ORIGINS = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:5173").split(",")
+CORS_ORIGINS = os.getenv("CORS_ALLOW_ORIGINS", "https://eng25cs0577-ctrl.github.io/criminal-network-analysis/").split(",")
 
 app.add_middleware(
     CORSMiddleware,
