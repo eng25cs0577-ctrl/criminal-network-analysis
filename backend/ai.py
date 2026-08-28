@@ -9,7 +9,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash") if GEMINI_API_KEY else None
+model = genai.GenerativeModel("gemini-3.6-flash") if GEMINI_API_KEY else None
 
 
 EXTRACT_ENTITIES_SYSTEM_PROMPT = """You are an intelligence analyst extracting structured entities from criminal case notes.
