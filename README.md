@@ -1,42 +1,36 @@
-# [Project Name] — Digital Financial Assistant for MSMEs
+# Criminal Network Analysis System
 
 ## 🧩 Problem Statement
-A digital financial assistant designed to help Indian MSMEs manage their finances better — 
-addressing [problem statement ID/title from SIH] under Smart India Hackathon 2026.
+An AI-powered platform to help investigators analyze criminal networks — built for 
+Smart India Hackathon (SIH) 2026, under the [problem statement ID/title — check your PPT].
 
 ## 💡 Overview
-Our solution helps small business owners predict cash flow, manage finances through voice 
-commands in regional languages, and stay functional even without stable internet access.
+The system ingests case and entity data, builds an intelligence engine for network 
+analysis, entity resolution, and pattern/anomaly detection, and presents findings to 
+investigators through an interactive platform with graph visualization, map view, 
+timeline, and case management tools.
 
 ## ✨ Key Features
-- 🤖 AI-powered cash-flow prediction
-- 🎙️ Voice input support in regional languages
-- 📴 Offline-first design
-- 📱 Available on both mobile and web
+- 🕸️ Network graph visualization of criminal connections
+- 🔍 Entity resolution across data sources
+- 📊 Pattern and anomaly detection
+- 🗺️ Map-based and timeline-based case views
+- 📁 Case management and role-based access (investigators, supervisors)
 
 ## 🛠️ Tech Stack
-- **Frontend:** [e.g. React / React Native]
-- **Backend:** [e.g. Node.js / Express / Django]
-- **Database:** [e.g. MongoDB / PostgreSQL]
-- **Other tools:** [AI/ML libraries, APIs used, etc.]
+- **Frontend:** React (Vite)
+- **Backend:** Python
+- **Database:** MySQL
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js / Python (whichever applies)
-- [Database] installed locally or a connection URI
+- Node.js (for frontend)
+- Python 3.x (for backend)
+- MySQL
 
 ### Installation
+
+**Database**
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-
-# Frontend
-cd frontend
-npm install
-npm run dev
-
-# Backend
-cd ../backend
-npm install
-npm start
+mysql -u root -p < database/schema.sql
