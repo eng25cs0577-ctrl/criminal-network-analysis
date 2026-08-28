@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://criminal-network-analysis.onrender.com';
 
 function getAuthHeader() {
   const token = localStorage.getItem('access_token');
