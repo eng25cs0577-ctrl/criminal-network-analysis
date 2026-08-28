@@ -54,7 +54,7 @@ Six-member team, SIH 2026:
 3. MOHAMMED SUFIYAN RAMAJAN APARAJ
 4. JEHAR PARMAR
 5. SUDESHNA PASUMARTHY
-6. SRIKHAR REDDY P
+6. SRIKAR REDDY P
 
 ## 📄 License
 [MIT / your choice, or leave blank]
