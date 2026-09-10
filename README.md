@@ -47,14 +47,10 @@ DB_NAME=Criminal_Database
 ## 📸 Screenshots / Demo
 Screenshots and demo video will be added once the UI is finalized.
 
-## 👥 Team — [ERROR 007]
+## 👥 Team — 
 Six-member team, SIH 2026:
 1. LUCKY KUMAR GUPTA — Team Lead
-2. NIDHI SHREE .H
-3. MOHAMMED SUFIYAN RAMAJAN APARAJ
-4. JEHAN PARMAR
-5. SUDESHNA PASUMARTHY
-6. SRIKAR REDDY P
+2. JEHAN PARMAR
 
 ## 📄 License
 [MIT / your choice, or leave blank]
