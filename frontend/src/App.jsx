@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import { ProtectedRoute } from './ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
+import { WorkbenchPage } from './pages/WorkbenchPage';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -23,7 +23,7 @@ function AppRoutes() {
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <WorkbenchPage />
           </ProtectedRoute>
         }
       />

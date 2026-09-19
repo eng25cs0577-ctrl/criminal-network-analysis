@@ -1,7 +1,18 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/LoginPage.jsx
+// Split-screen login matching the workbench's navy/gold visual language.
+// Uses only styles.css classes/vars — no Tailwind (none is installed).
+
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { apiSignup, apiLogin } from '../api';
 import { useAuth } from '../AuthContext';
+
+// Small decorative network — same idea as the graph screen, purely ambient.
+const NODES = [
+  [60, 70], [140, 40], [220, 110], [90, 160], [200, 190],
+  [280, 60], [300, 170], [40, 230], [170, 250], [260, 240],
+];
+const EDGES = [[0,1],[1,2],[0,3],[3,4],[2,4],[1,5],[5,6],[4,6],[3,7],[7,8],[4,8],[8,9],[6,9]];
 
 export function LoginPage() {
   const [isSignup, setIsSignup] = useState(false);
@@ -13,14 +24,12 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       if (isSignup) {
         if (password !== confirmPassword) {
@@ -42,168 +51,115 @@ export function LoginPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-bg-base relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(201,162,39,0.03),transparent)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,var(--bg-base))]" />
-      </div>
+  const label = { display: 'block', font: '500 10px/1 var(--font-ui)', textTransform: 'uppercase', letterSpacing: '.08em', color: 'var(--text-tertiary)', marginBottom: 7 };
 
-      <div className="relative z-10 w-full max-w-md animate-fade-in">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-accent-gold to-accent-gold-light mb-6 shadow-glow">
-            <svg className="w-7 h-7 text-bg-base" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-base)' }}>
+      {/* Brand panel */}
+      <div style={{
+        flex: '1 1 46%', minWidth: 0, position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(160deg,#0d121c,#0a0e16)',
+        borderRight: '1px solid var(--border-subtle)',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        padding: '48px 44px',
+      }}>
+        <svg viewBox="0 0 340 300" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.5 }} preserveAspectRatio="xMidYMid slice">
+          {EDGES.map(([a, b], i) => (
+            <line key={i} x1={NODES[a][0]} y1={NODES[a][1]} x2={NODES[b][0]} y2={NODES[b][1]} stroke="#243044" strokeWidth="1" />
+          ))}
+          {NODES.map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r={i === 4 ? 7 : 4} fill={i === 4 ? '#c9a227' : '#3b82f6'} opacity={i === 4 ? 1 : 0.7} />
+          ))}
+        </svg>
+
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 6, background: 'linear-gradient(135deg,#c9a227,#e8c547)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: '700 13px/1 var(--font-mono)', color: 'var(--bg-base)' }}>CN</div>
+          <div style={{ font: '600 13px/1.2 var(--font-ui)' }}>Criminal Network Analyser</div>
+        </div>
+
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 380 }}>
+          <div style={{ font: '600 28px/1.25 var(--font-ui)', color: 'var(--text-primary)', marginBottom: 12 }}>
+            Map the network.<br />Find the coordinator.
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-text-primary mb-1">CRIMINAL NETWORK ANALYSIS</h1>
-          <p className="text-sm text-text-tertiary uppercase tracking-wider">{isSignup ? 'OPERATOR REGISTRATION' : 'SECURE ACCESS TERMINAL'}</p>
-          <div className="mt-5 flex items-center justify-center gap-4 text-xs text-text-tertiary font-mono">
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" /><span>SYSTEM ONLINE</span></span>
-            <span className="px-2 border-x border-border-subtle" />
-            <span>CLASSIFICATION: RESTRICTED</span>
-            <span className="px-2 border-x border-border-subtle" />
-            <span>AES-256 ENCRYPTED</span>
+          <div style={{ font: '400 13px/1.6 var(--font-ui)', color: 'var(--text-secondary)' }}>
+            Link analysis, entity resolution and movement tracing for
+            investigators — every claim carries a source and a confidence grade.
           </div>
         </div>
 
-        <div className="card border-border-default relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-gold to-transparent" />
-          
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: 16, font: '500 10px/1 var(--font-mono)', color: 'var(--text-muted)', letterSpacing: '.06em' }}>
+          <span>RESTRICTED ACCESS</span>
+          <span>·</span>
+          <span>ALL ACTIONS LOGGED</span>
+        </div>
+      </div>
+
+      {/* Form panel */}
+      <div style={{ flex: '1 1 54%', minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ width: '100%', maxWidth: 380 }}>
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ font: '600 19px/1.3 var(--font-ui)', color: 'var(--text-primary)', marginBottom: 4 }}>
+              {isSignup ? 'Request access' : 'Sign in'}
+            </div>
+            <div style={{ font: '400 12.5px/1.4 var(--font-ui)', color: 'var(--text-tertiary)' }}>
+              {isSignup ? 'Register as an operator on this case system.' : 'Enter your credentials to continue.'}
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label className="block text-xs font-medium text-text-tertiary uppercase tracking-wider mb-2">OPERATOR IDENTIFIER</label>
-              <div className="relative">
-                <input
-                  type="email"
-                  className="input w-full pl-10 pr-4 py-3 bg-bg-base border-border-default focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/15"
-                  placeholder="agent@cbi.gov.in"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  disabled={loading}
-                  aria-label="Email address"
-                />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 icon-sm text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9v1.5a2.5 2.5 0 005 0V12z" />
-                </svg>
-              </div>
+              <label style={label}>Email</label>
+              <input
+                type="email" className="input" style={{ width: '100%' }}
+                placeholder="agent@cbi.gov.in" value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required autoComplete="email" disabled={loading}
+              />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-text-tertiary uppercase tracking-wider mb-2">ACCESS CODE</label>
-              <div className="relative">
-                <input
-                  type="password"
-                  className="input w-full pl-10 pr-4 py-3 bg-bg-base border-border-default focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/15"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete={isSignup ? 'new-password' : 'current-password'}
-                  disabled={loading}
-                  aria-label="Password"
-                />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 icon-sm text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                </svg>
-              </div>
+              <label style={label}>Password</label>
+              <input
+                type="password" className="input" style={{ width: '100%' }}
+                placeholder="••••••••" value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required autoComplete={isSignup ? 'new-password' : 'current-password'} disabled={loading}
+              />
             </div>
 
             {isSignup && (
               <div>
-                <label className="block text-xs font-medium text-text-tertiary uppercase tracking-wider mb-2">CONFIRM ACCESS CODE</label>
-                <div className="relative">
-                  <input
-                    type="password"
-                    className={`input w-full pl-10 pr-4 py-3 bg-bg-base ${error && isSignup && password !== confirmPassword ? 'input-error' : ''} focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/15`}
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                    disabled={loading}
-                    aria-label="Confirm password"
-                  />
-                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 icon-sm text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                {error && isSignup && password !== confirmPassword && (
-                  <p className="mt-1.5 text-xs text-accent-red flex items-center gap-1.5">
-                    <svg className="icon-xs flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-                    Passwords do not match
-                  </p>
+                <label style={label}>Confirm password</label>
+                <input
+                  type="password" className="input" style={{ width: '100%' }}
+                  placeholder="••••••••" value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required autoComplete="new-password" disabled={loading}
+                />
+                {error && password !== confirmPassword && (
+                  <div style={{ marginTop: 6, font: '500 11px/1.3 var(--font-ui)', color: 'var(--accent-red)' }}>Passwords do not match</div>
                 )}
               </div>
             )}
 
-            {error && !((isSignup && password !== confirmPassword)) && (
-              <div className="p-3 rounded-lg bg-red-alert/10 border border-accent-red/20 flex items-center gap-2 animate-fade-in">
-                <svg className="icon-sm text-accent-red flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-                <span className="text-sm text-accent-red">{error}</span>
+            {error && !(isSignup && password !== confirmPassword) && (
+              <div style={{ padding: '10px 12px', borderRadius: 'var(--radius-sm)', background: 'rgba(239,68,68,.08)', border: '1px solid rgba(239,68,68,.2)', font: '500 12px/1.4 var(--font-ui)', color: 'var(--accent-red)' }}>
+                {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              className="btn btn-primary w-full py-3 mt-1 text-sm font-semibold uppercase tracking-wider"
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-3">
-                  <svg className="animate-spin icon-sm" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                  </svg>
-                  <span>{isSignup ? 'REGISTERING OPERATOR...' : 'AUTHENTICATING...'}</span>
-                </span>
-              ) : (
-                isSignup ? 'REGISTER OPERATOR' : 'INITIATE SESSION'
-              )}
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '11px 16px', fontSize: 13 }} disabled={loading}>
+              {loading ? (isSignup ? 'Creating account…' : 'Signing in…') : isSignup ? 'Create account' : 'Sign in'}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-border-subtle">
-            <p className="text-center text-xs text-text-tertiary mb-4">
-              {isSignup ? 'Already have clearance?' : 'Require new credentials?'}
-            </p>
+          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--border-subtle)', textAlign: 'center' }}>
             <button
-              type="button"
+              type="button" className="btn btn-ghost"
               onClick={() => { setIsSignup(!isSignup); setError(''); }}
-              className="btn btn-ghost w-full py-2.5 text-sm font-medium uppercase tracking-wider"
             >
-              {isSignup ? 'ACCESS TERMINAL' : 'REQUEST CLEARANCE'}
+              {isSignup ? 'Already have an account? Sign in' : "Don't have an account? Request access"}
             </button>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-xs text-text-muted font-mono tracking-wider">DEMO MODE • ANY CREDENTIALS ACCEPTED • AUDIT LOG DISABLED</p>
-        </div>
-
-        <div className="mt-7 p-4 rounded-lg bg-bg-elevated/50 border border-border-subtle text-xs text-text-tertiary">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-accent-gold">SYSTEM STATUS</span>
-            <span className="flex items-center gap-1.5 text-accent-green">
-              <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse" />
-              OPERATIONAL
-            </span>
-          </div>
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div>
-              <div className="font-mono text-accent-gold-light text-lg">v1.0.0</div>
-              <div className="text-[9px] uppercase tracking-wider">BUILD</div>
-            </div>
-            <div>
-              <div className="font-mono text-accent-gold-light text-lg">AES-256</div>
-              <div className="text-[9px] uppercase tracking-wider">ENCRYPTION</div>
-            </div>
-            <div>
-              <div className="font-mono text-accent-gold-light text-lg">JWT-RS256</div>
-              <div className="text-[9px] uppercase tracking-wider">AUTH</div>
-            </div>
           </div>
         </div>
       </div>

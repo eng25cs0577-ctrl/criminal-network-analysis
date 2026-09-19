@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    { "id": "Suspect_0_0", "cell": "Alpha", "betweenness": 0.126812, "degree": 6 },
+    { "id": "Suspect_0_1", "cell": "Alpha", "betweenness": 0.041210, "degree": 4 },
+    { "id": "Suspect_0_2", "cell": "Alpha", "betweenness": 0.018900, "degree": 3 },
+    { "id": "Suspect_1_0", "cell": "Bravo", "betweenness": 0.052300, "degree": 5 },
+    { "id": "Suspect_1_1", "cell": "Bravo", "betweenness": 0.030100, "degree": 4 },
+    { "id": "Suspect_1_2", "cell": "Bravo", "betweenness": 0.012400, "degree": 3 },
+    { "id": "Hidden_Coordinator", "cell": "Bridge", "betweenness": 0.130435, "degree": 2, "isCoordinator": true },
+    { "id": "Suspect_2_0", "cell": "Charlie", "betweenness": 0.126812, "degree": 5 },
+    { "id": "Suspect_2_1", "cell": "Charlie", "betweenness": 0.007246, "degree": 5 },
+    { "id": "Suspect_2_2", "cell": "Charlie", "betweenness": 0.007246, "degree": 5 },
+    { "id": "Suspect_2_3", "cell": "Charlie", "betweenness": 0.007246, "degree": 5 },
+    { "id": "Suspect_2_5", "cell": "Charlie", "betweenness": 0.007246, "degree": 5 },
+    { "id": "Suspect_3_0", "cell": "Delta", "betweenness": 0.045600, "degree": 6 },
+    { "id": "Suspect_3_1", "cell": "Delta", "betweenness": 0.022100, "degree": 4 },
+    { "id": "Suspect_3_2", "cell": "Delta", "betweenness": 0.015800, "degree": 3 }
+  ],
+  "links": [
+    { "source": "Suspect_0_0", "target": "Suspect_0_1" },
+    { "source": "Suspect_0_0", "target": "Suspect_0_2" },
+    { "source": "Suspect_0_1", "target": "Suspect_0_2" },
+    { "source": "Suspect_0_0", "target": "Hidden_Coordinator" },
+    { "source": "Suspect_1_0", "target": "Suspect_1_1" },
+    { "source": "Suspect_1_1", "target": "Suspect_1_2" },
+    { "source": "Suspect_1_0", "target": "Suspect_1_2" },
+    { "source": "Suspect_1_0", "target": "Hidden_Coordinator" },
+    { "source": "Hidden_Coordinator", "target": "Suspect_2_0" },
+    { "source": "Suspect_2_0", "target": "Suspect_2_1" },
+    { "source": "Suspect_2_0", "target": "Suspect_2_2" },
+    { "source": "Suspect_2_0", "target": "Suspect_2_3" },
+    { "source": "Suspect_2_0", "target": "Suspect_2_5" },
+    { "source": "Suspect_2_1", "target": "Suspect_2_2" },
+    { "source": "Suspect_2_2", "target": "Suspect_2_3" },
+    { "source": "Suspect_2_3", "target": "Suspect_2_5" },
+    { "source": "Suspect_2_5", "target": "Suspect_2_1" },
+    { "source": "Suspect_2_0", "target": "Suspect_3_0" },
+    { "source": "Suspect_3_0", "target": "Suspect_3_1" },
+    { "source": "Suspect_3_1", "target": "Suspect_3_2" },
+    { "source": "Suspect_3_0", "target": "Suspect_3_2" }
+  ]
+}
