@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useAuth } from '../AuthContext';
 import ForceGraph2D from 'react-force-graph-2d';
 import { apiGetGraph, apiGetPath, apiExtractEntities, apiAskAssistant } from '../api';
+import { DemoWalkthrough } from '../components/DemoWalkthrough';
 
 const COMMUNITY_COLORS = [
   '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#a855f7', '#06b6d4',
@@ -38,6 +39,7 @@ export function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const [selectedNode, setSelectedNode] = useState(null);
+  const [hoverNode, setHoverNode] = useState(null);
   const [pathSource, setPathSource] = useState('');
   const [pathTarget, setPathTarget] = useState('');
   const [pathData, setPathData] = useState(null);
@@ -57,6 +59,12 @@ export function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
+  const [showTour, setShowTour] = useState(() => !localStorage.getItem('tour_seen'));
+  const completeTour = () => {
+    localStorage.setItem('tour_seen', 'true');
+    setShowTour(false);
+  };
+
   const graphRef = useRef(null);
 
   const { nodes, edges, metrics } = graphData || {};
@@ -70,6 +78,9 @@ export function DashboardPage() {
       id: parseInt(id), label: getCommunityLabel(parseInt(id)), count,
       color: getCommunityColor(parseInt(id)),
     })), [communitySizes]);
+
+  const maxCommunityCount = useMemo(() =>
+    Math.max(...communityStats.map(c => c.count), 1), [communityStats]);
 
   const networkStats = useMemo(() => ({
     totalNodes: nodes?.length || 0,
@@ -85,7 +96,11 @@ export function DashboardPage() {
     try {
       setLoading(true);
       const data = await apiGetGraph();
-      setGraphData(data);
+      const cleanedNodes = (data.nodes || []).map(n => {
+         const { x, y, fx, fy, vx, vy, ...rest } = n;
+         return rest;
+      });
+      setGraphData({ ...data, nodes: cleanedNodes });
       setLastUpdated(new Date());
       setError('');
     } catch (err) { setError(err.message); }
@@ -117,7 +132,7 @@ export function DashboardPage() {
             return data.path.includes(src) && data.path.includes(tgt) ? '#c9a227' : '#1e293b';
           })
           .nodeColor(n => data.path.includes(n.id) ? '#e8c547' : getCommunityColor(n.community))
-          .nodeRelSize(n => data.path.includes(n.id) ? 14 : (5 + n.betweenness * 90));
+          .nodeVal(n=>data.path.includes(n.id)?14:(5 + n.betweenness*90));
       }
     } catch (err) { setError(err.message); }
     finally { setPathLoading(false); }
@@ -143,6 +158,35 @@ export function DashboardPage() {
   };
 
   const handleNodeClick = (node) => { setSelectedNode(node); setActiveTab('details'); };
+
+  const handleNodeHover = (node) => {
+    setHoverNode(node);
+    if (!graphRef.current) return;
+    if (!node) {
+      graphRef.current
+        .nodeColor(n => n.flagged ? '#dc2626' : getCommunityColor(n.community))
+        .linkColor('#1e293b')
+        .linkWidth(0.5);
+      return;
+    }
+    const connectedIds = new Set([node.id]);
+    (edges || []).forEach(e => {
+      const s = e.source.id ?? e.source, t = e.target.id ?? e.target;
+      if (s === node.id) connectedIds.add(t);
+      if (t === node.id) connectedIds.add(s);
+    });
+    graphRef.current
+      .nodeColor(n => connectedIds.has(n.id) ? (n.flagged ? '#dc2626' : getCommunityColor(n.community)) : '#334155')
+      .linkColor(l => {
+        const s = l.source.id ?? l.source, t = l.target.id ?? l.target;
+        return (s === node.id || t === node.id) ? '#c9a227' : '#1e293b40';
+      })
+      .linkWidth(l => {
+        const s = l.source.id ?? l.source, t = l.target.id ?? l.target;
+        return (s === node.id || t === node.id) ? 1.5 : 0.3;
+      });
+  };
+
   const handleBackgroundClick = () => {
     setSelectedNode(null); setPathData(null);
     if (graphRef.current) {
@@ -150,7 +194,7 @@ export function DashboardPage() {
         .nodeColor(n => getCommunityColor(n.community))
         .linkColor('#1e293b')
         .linkWidth(0.5)
-        .nodeRelSize(n => 5 + n.betweenness * 90);
+        .nodeVal(n => 5 + n.betweenness * 90);
     }
   };
   const clearPath = () => { setPathData(null); setPathSource(''); setPathTarget(''); handleBackgroundClick(); };
@@ -179,6 +223,8 @@ export function DashboardPage() {
 
   return (
     <div className="h-screen flex flex-col bg-bg-base">
+      {showTour && <DemoWalkthrough onComplete={completeTour} setActiveTab={setActiveTab} />}
+
       <header className="toolbar relative z-10">
         <div className="toolbar-group flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent-gold to-accent-gold-light flex items-center justify-center shadow-glow">
@@ -203,6 +249,7 @@ export function DashboardPage() {
           ].map(tab => (
             <button
               key={tab.id}
+              id={`nav-tab-${tab.id}`}
               role="tab"
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -231,6 +278,7 @@ export function DashboardPage() {
           <div className="toolbar-divider h-5" />
           <span className="text-xs text-text-tertiary">OPERATOR:</span>
           <span className="text-xs font-mono text-accent-gold truncate max-w-[140px]">{user?.email}</span>
+          <button onClick={() => setShowTour(true)} className="btn btn-ghost btn-sm px-3" data-tooltip="Replay tour">TOUR</button>
           <button onClick={logout} className="btn btn-ghost btn-sm px-3" data-tooltip="End session">END SESSION</button>
         </div>
       </header>
@@ -259,6 +307,29 @@ export function DashboardPage() {
                       <div className="stat-card"><div className="stat-value text-accent-purple">{networkStats.density}</div><div className="stat-label">NETWORK DENSITY</div></div>
                       <div className="stat-card"><div className="stat-value text-accent-amber">{networkStats.topBetweenness}</div><div className="stat-label">MAX BETWEENNESS</div></div>
                       <div className="stat-card"><div className="stat-value text-text-primary">{communityStats.length}</div><div className="stat-label">COMMUNITIES</div></div>
+                    </div>
+                  </section>
+
+                  <section className="section animate-fade-in">
+                    <header className="section-header">
+                      <h2 className="section-title">COMMUNITY DISTRIBUTION</h2>
+                    </header>
+                    <div className="space-y-2.5">
+                      {communityStats.map(c => {
+                        const pct = Math.round((c.count / maxCommunityCount) * 100);
+                        return (
+                          <div key={c.id} className="flex items-center gap-3">
+                            <span className="text-xs font-mono text-text-tertiary w-14 flex-shrink-0">{c.label}</span>
+                            <div className="flex-1 h-3 rounded-full bg-bg-elevated overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{ width: `${pct}%`, background: c.color }}
+                              />
+                            </div>
+                            <span className="text-xs font-mono text-text-primary w-6 text-right flex-shrink-0">{c.count}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </section>
 
@@ -498,15 +569,26 @@ export function DashboardPage() {
         </button>
 
         <div className="main-content relative flex flex-col">
+          <div className="fixed top-20 right-5 z-20 flex flex-col gap-1.5">
+            <button className="btn btn-ghost btn-sm p-2" onClick={() => graphRef.current?.zoom(graphRef.current.zoom() * 1.4, 300)} aria-label="Zoom in">+</button>
+            <button className="btn btn-ghost btn-sm p-2" onClick={() => graphRef.current?.zoom(graphRef.current.zoom() / 1.4, 300)} aria-label="Zoom out">−</button>
+            <button className="btn btn-ghost btn-sm p-2" onClick={() => graphRef.current?.zoomToFit(400, 40)} aria-label="Reset view">⤢</button>
+          </div>
+
           <ForceGraph2D
             ref={graphRef}
             graphData={{ nodes: nodes || [], links: edges || [] }}
             nodeId="id"
             nodeLabel="name"
             nodeColor={n => n.flagged ? '#dc2626' : getCommunityColor(n.community)}
-            nodeRelSize={n => 5 + n.betweenness * 90}
+            nodeVal={n => 5 + n.betweenness * 90}
+            nodeRelSize={1}
             nodeCanvasObject={(node, ctx, globalScale) => {
               const size = (5 + node.betweenness * 90) * globalScale;
+              ctx.beginPath();
+              ctx.arc(0, 0, size, 0, 2 * Math.PI);
+              ctx.fillStyle = node.flagged ? '#dc2626' : getCommunityColor(node.community);
+              ctx.fill();
               if (node.flagged) {
                 ctx.beginPath(); ctx.arc(0, 0, size * 1.4, 0, 2 * Math.PI);
                 ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 2 * globalScale; ctx.stroke();
@@ -528,6 +610,7 @@ export function DashboardPage() {
             linkWidth={0.5}
             linkDirectionalParticles={0}
             onNodeClick={handleNodeClick}
+            onNodeHover={handleNodeHover}
             onBackgroundClick={handleBackgroundClick}
             d3AlphaDecay={0.015}
             d3VelocityDecay={0.12}

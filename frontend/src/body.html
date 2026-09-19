@@ -1,0 +1,23 @@
+<DOCTYPE.intial>
+<html>
+    <head>
+        <title>HTML From Input Text</title>
+    </head>
+    <body>
+        <h1>HTML From Input Text</h1>
+        <form id="htmlForm">
+            <label for="htmlInput">Enter HTML code:</label><br>
+            <textarea id="htmlInput" rows="10" cols="50"></textarea><br>
+            <button type="button" onclick="generateHTML()">Generate HTML</button>
+        </form>
+        <div id="output"></div>
+
+        <script>
+            function generateHTML() {
+                const htmlInput = document.getElementById('htmlInput').value;
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = htmlInput;
+            }
+        </script>
+        </body>
+</html>
